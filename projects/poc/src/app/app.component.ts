@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EventBus } from 'ngx-aes';
+import { AesActionBus } from 'ngx-aes';
 
-import { AppComponentLoaded } from './events/app-component-loaded.event';
+import { LoadAppComponent } from './aes/actions';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +12,11 @@ import { AppComponentLoaded } from './events/app-component-loaded.event';
 export class AppComponent implements OnInit {
   constructor(
     private readonly router: Router,
-    private readonly eventBus: EventBus
+    private readonly actionBus: AesActionBus
   ) {}
 
   ngOnInit(): void {
-    this.eventBus.publish(new AppComponentLoaded());
+    this.actionBus.execute(new LoadAppComponent());
   }
 
   navigateTo(route: string) {

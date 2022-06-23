@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EventBus } from 'ngx-aes';
+import { AesEventBus } from 'ngx-aes';
 
 import { FirstPageLoaded } from '../../events';
 
@@ -9,7 +9,7 @@ import { FirstPageLoaded } from '../../events';
   styleUrls: ['./first-page.component.scss'],
 })
 export class FirstPageComponent implements OnInit {
-  constructor(private readonly eventBus: EventBus) {}
+  constructor(private readonly eventBus: AesEventBus) {}
 
   ngOnInit(): void {
     this.eventBus.publish(new FirstPageLoaded());

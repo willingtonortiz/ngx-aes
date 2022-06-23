@@ -14,7 +14,10 @@ export class ExplorerService {
   ) {}
 
   explore(): CqrsOptions {
+    const actions = this.config.actionHandlers ?? [];
     const events = this.config.eventHandlers ?? [];
-    return { events };
+    const sagas = this.config.sagas ?? [];
+
+    return { actions, events, sagas };
   }
 }

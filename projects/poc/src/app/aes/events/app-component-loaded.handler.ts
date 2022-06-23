@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { v4 } from '@lukeed/uuid';
-import { EventsHandler, IEventHandler } from 'ngx-aes';
+import { EventsHandler, EventHandler } from 'ngx-aes';
 
 import { AppComponentLoaded } from './app-component-loaded.event';
 
 @Injectable()
 @EventsHandler(AppComponentLoaded)
 export class AppComponentLoadedHandler
-  implements IEventHandler<AppComponentLoaded>
+  implements EventHandler<AppComponentLoaded>
 {
   handle(event: AppComponentLoaded) {
-    console.log('AppComponentLoadedHandler', v4());
+    console.log('[AppComponentLoadedHandler]', event);
   }
 }

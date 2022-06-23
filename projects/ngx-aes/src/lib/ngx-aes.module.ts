@@ -7,13 +7,15 @@ import {
   Optional,
   SkipSelf,
 } from '@angular/core';
-import { EventBus } from './event-bus';
+
 import {
   MODULE_CONFIG,
   NgxAesModuleConfig,
 } from './interfaces/module-config.interface';
 import { ExplorerService } from './services';
 import { _CHECK_ROOT_SERVICES_GUARO, _ROOT_SERVICES_GUARD } from './tokens';
+import { AesEventBus } from './event-bus';
+import { AesActionBus } from './action-bus';
 
 @NgModule({})
 export class NgxAesRootModule {
@@ -32,11 +34,15 @@ export class NgxAesFeatureModule {
     guard: any,
     @Inject(MODULE_CONFIG)
     config: NgxAesModuleConfig,
-    eventBus: EventBus,
+    actionBus: AesActionBus,
+    eventBus: AesEventBus,
     moduleRef: NgModuleRef<any>
   ) {
-    const { eventHandlers: events } = config;
-    eventBus.register(events, moduleRef);
+    const { eventHandlers, actionHandlers, sagas } = config;
+
+    actionBus.register(actionHandlers, moduleRef);
+    eventBus.register(eventHandlers, moduleRef);
+    eventBus.registerSagas(sagas, moduleRef);
   }
 }
 
@@ -50,19 +56,27 @@ export class NgxAesModule {
     return {
       ngModule: NgxAesRootModule,
       providers: [
-        [EventBus],
-        ExplorerService,
+        // Registering handlers
+        config.actionHandlers ?? [],
         config.eventHandlers ?? [],
+        config.sagas ?? [],
+
+        AesEventBus,
+        AesActionBus,
+        ExplorerService,
         { provide: MODULE_CONFIG, useValue: config },
         {
           provide: _ROOT_SERVICES_GUARD,
           useFactory: _provideForRootGuard,
-          deps: [[EventBus, new Optional(), new SkipSelf()]],
+          deps: [
+            [AesEventBus, new Optional(), new SkipSelf()],
+            [AesActionBus, new Optional(), new SkipSelf()],
+          ],
         },
         {
           provide: APP_INITIALIZER,
           useFactory: appInitializerFactory,
-          deps: [ExplorerService, EventBus, NgModuleRef],
+          deps: [ExplorerService, AesActionBus, AesEventBus, NgModuleRef],
           multi: true,
         },
       ],
@@ -75,12 +89,16 @@ export class NgxAesModule {
     return {
       ngModule: NgxAesFeatureModule,
       providers: [
+        // Registering handlers
+        config.actionHandlers ?? [],
         config.eventHandlers ?? [],
+        config.sagas ?? [],
+
         { provide: MODULE_CONFIG, useValue: config },
         {
           provide: _CHECK_ROOT_SERVICES_GUARO,
           useFactory: _initializeFeatureGuard,
-          deps: [EventBus],
+          deps: [AesActionBus, AesEventBus],
           multi: true,
         },
       ],
@@ -90,17 +108,21 @@ export class NgxAesModule {
 
 function appInitializerFactory(
   explorerService: ExplorerService,
-  eventBus: EventBus,
+  actionBus: AesActionBus,
+  eventBus: AesEventBus,
   moduleRef: NgModuleRef<any>
 ) {
   return () => {
-    const { events } = explorerService.explore();
+    const { actions, events, sagas } = explorerService.explore();
+
+    actionBus.register(actions, moduleRef);
     eventBus.register(events, moduleRef);
+    eventBus.registerSagas(sagas, moduleRef);
   };
 }
 
-function _provideForRootGuard(eventBus: EventBus) {
-  if (eventBus) {
+function _provideForRootGuard(actionBus: AesActionBus, eventBus: AesEventBus) {
+  if (actionBus || eventBus) {
     throw new TypeError(
       `NgxAesModule.forRoot() called twice. Feature modules should use NgxAesModule.forFeature() instead.`
     );
@@ -108,8 +130,11 @@ function _provideForRootGuard(eventBus: EventBus) {
   return 'guard';
 }
 
-function _initializeFeatureGuard(eventBus: EventBus) {
-  if (!eventBus) {
+function _initializeFeatureGuard(
+  actionBus: AesActionBus,
+  eventBus: AesEventBus
+) {
+  if (!actionBus || !eventBus) {
     throw new TypeError(
       `No provider for EventBus. NgxAesModule.forRoot() should be called before`
     );

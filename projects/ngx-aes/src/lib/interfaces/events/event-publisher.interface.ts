@@ -1,6 +1,6 @@
-import { IEvent } from './event.interface';
+import { Event } from './event.interface';
 
-export interface IEventPublisher<EventBase extends IEvent = IEvent> {
+export interface EventPublisher<EventBase extends Event = Event> {
   publish<T extends EventBase>(event: T): void;
   publishAll?<T extends EventBase = EventBase>(events: T[]): void;
 }

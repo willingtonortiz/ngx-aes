@@ -1,10 +1,11 @@
 import { filter, Observable } from 'rxjs';
-import { IEvent, Type } from '../interfaces';
 
-export function ofType<TInput extends IEvent, TOutput extends IEvent>(
+import { Event, Type } from '../interfaces';
+
+export function ofType<TInput extends Event, TOutput extends Event>(
   ...types: Type<TOutput>[]
 ) {
-  const isInstanceOf = (event: IEvent): event is TOutput =>
+  const isInstanceOf = (event: Event): event is TOutput =>
     !!types.find((classType) => event instanceof classType);
 
   return (source: Observable<TInput>): Observable<TOutput> =>

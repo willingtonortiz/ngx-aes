@@ -4,6 +4,7 @@
 
 export * from './lib/decorators';
 export * from './lib/event-bus';
+export * from './lib/action-bus';
 export * from './lib/helpers';
 export * from './lib/interfaces';
 export * from './lib/ngx-aes.module';

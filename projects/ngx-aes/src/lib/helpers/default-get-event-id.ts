@@ -1,7 +1,7 @@
 import { EVENT_METADATA } from '../decorators';
-import { IEvent, Type } from '../interfaces';
+import { Event, Type } from '../interfaces';
 
-export const defaultGetEventId = <EventBase extends IEvent = IEvent>(
+export const defaultGetEventId = <EventBase extends Event = Event>(
   event: EventBase
 ): string => {
   const { constructor } = Object.getPrototypeOf(event);
@@ -9,7 +9,7 @@ export const defaultGetEventId = <EventBase extends IEvent = IEvent>(
 };
 
 export const defaultReflectEventId = <
-  EventBase extends Type<IEvent> = Type<IEvent>
+  EventBase extends Type<Event> = Type<Event>
 >(
   event: EventBase
 ): string => {

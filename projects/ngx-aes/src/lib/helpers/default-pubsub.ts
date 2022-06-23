@@ -1,8 +1,8 @@
 import { Subject } from 'rxjs';
-import { IEvent, IEventPublisher, IMessageSource } from '../interfaces';
+import { Event, EventPublisher, MessageSource } from '../interfaces';
 
-export class DefaultPubSub<EventBase extends IEvent>
-  implements IEventPublisher<EventBase>, IMessageSource<EventBase>
+export class DefaultPubSub<EventBase extends Event>
+  implements EventPublisher<EventBase>, MessageSource<EventBase>
 {
   constructor(private subject$: Subject<EventBase>) {}
 

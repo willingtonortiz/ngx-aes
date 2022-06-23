@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import { v4 } from '@lukeed/uuid';
 
-import { IEvent } from '../interfaces';
+import { Event } from '../interfaces';
 import { EVENTS_HANDLER_METADATA, EVENT_METADATA } from './constants';
 
-export const EventsHandler = (...events: IEvent[]): ClassDecorator => {
+export const EventsHandler = (...events: Event[]): ClassDecorator => {
   return (target: object) => {
     events.forEach((event) => {
       if (!Reflect.hasOwnMetadata(EVENT_METADATA, event)) {

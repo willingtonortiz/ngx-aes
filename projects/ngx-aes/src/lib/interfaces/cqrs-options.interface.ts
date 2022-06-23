@@ -1,7 +1,10 @@
 import { Type } from './type.interface';
 
-import { IEventHandler } from './event-handler.interface';
+import { ActionHandler } from './actions/action-handler.interface';
+import { EventHandler } from './events/event-handler.interface';
 
 export interface CqrsOptions {
-  events: Type<IEventHandler>[];
+  actions: Type<ActionHandler>[];
+  events: Type<EventHandler>[];
+  sagas: Type<any>[];
 }
